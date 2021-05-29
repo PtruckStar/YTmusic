@@ -1,94 +1,97 @@
-const app = require("express")()
-const ytdl = require("ytdl-core")
+const app = require("express")();
+const ytdl = require("ytdl-core");
 const path = require("path")
 
-const getInfo = async (req, res) => {
+app.get("/stream/:videoId", async (req, res) => {
+  const { videoId } = req.params;
+  const isValid = ytdl.validateID(videoId);
 
-    try {
-        const { url } = req.query
-        const videoId = ytdl.getURLVideoID(url)
+  if (!isValid) {
+    throw new Error();
+  }
 
-        const videoInfo = await ytdl.getInfo(videoId)
-        const { thumbnail, author, title } = videoInfo.videoDetails
+  const videoInfo = await ytdl.getInfo(videoId);
 
-        return res.status(200).json({
-            success: true,
-            data: {
-                thumbnail: thumbnail['thumbnails'][0].url || null,
-                videoId, author: author ? author['name'] : null, title
-            }
-        })
+  let audioFormat = ytdl.chooseFormat(videoInfo.formats, {
+    filter: "audioonly",
+    quality: "highestaudio",
+  });
 
-    } catch (error) {
-        console.log(`error --->`, error);
-        return res.status(500).json({ success: false, msg: "Failed to get video info" })
-    }
+  const { itag, container, contentLength } = audioFormat;
 
-}
+  // Listing 3.
+  const options = {};
 
+  let start;
+  let end;
 
-
-const getAudioStream = async (req, res) => {
-
-    try {
-
-        const { videoId } = req.params
-        const isValid = ytdl.validateID(videoId)
-
-        if (!isValid) {
-
-            throw new Error()
+  const range = req.headers.range;
+  if (range) {
+    const bytesPrefix = "bytes=";
+    if (range.startsWith(bytesPrefix)) {
+      const bytesRange = range.substring(bytesPrefix.length);
+      const parts = bytesRange.split("-");
+      if (parts.length === 2) {
+        const rangeStart = parts[0] && parts[0].trim();
+        if (rangeStart && rangeStart.length > 0) {
+          options.start = start = parseInt(rangeStart);
         }
-
-        const videoInfo = await ytdl.getInfo(videoId)
-
-        let audioFormat = ytdl.chooseFormat(videoInfo.formats, {
-            filter: "audioonly",
-            quality: "highestaudio"
-        });
-
-        const { itag, container, contentLength } = audioFormat
-
-        // define headers
-        const rangeHeader = req.headers.range || null
-
-        console.log(`rangeHeader -->`, rangeHeader);
-        const rangePosition = (rangeHeader) ? rangeHeader.replace(/bytes=/, "").split("-") : null
-        console.log(`rangePosition`, rangePosition);
-        const startRange = rangePosition ? parseInt(rangePosition[0], 10) : 0;
-        const endRange = rangePosition && rangePosition[1].length > 0 ? parseInt(rangePosition[1], 10) : contentLength - 1;
-        const chunksize = (endRange - startRange) + 1;
-
-        res.writeHead(206, {
-            'Content-Type': `audio/${container}`,
-            'Content-Length': chunksize,
-            "Content-Range": "bytes " + startRange + "-" + endRange + "/" + contentLength,
-            "Accept-Ranges": "bytes",
-        })
-
-        const range = { start: startRange, end: endRange }
-        const audioStream = ytdl(videoId, { filter: format => format.itag === itag, range })
-        audioStream.pipe(res)
-
-    } catch (error) {
-        console.log(error);
-        return res.status(500).send()
+        const rangeEnd = parts[1] && parts[1].trim();
+        if (rangeEnd && rangeEnd.length > 0) {
+          options.end = end = parseInt(rangeEnd);
+        }
+      }
     }
-}
+  }
 
+  res.setHeader("content-type", `audio/${container}`);
+
+  // Listing 4.
+  if (req.method === "HEAD") {
+    res.statusCode = 200;
+    res.setHeader("accept-ranges", "bytes");
+    res.setHeader("content-length", contentLength);
+    res.end();
+  } else {
+    // Listing 5.
+    let retrievedLength;
+    if (start !== undefined && end !== undefined) {
+      retrievedLength = end + 1 - start;
+    } else if (start !== undefined) {
+      retrievedLength = contentLength - start;
+    } else if (end !== undefined) {
+      retrievedLength = end + 1;
+    } else {
+      retrievedLength = contentLength;
+    }
+
+    // Listing 6.
+    res.statusCode = start !== undefined || end !== undefined ? 206 : 200;
+
+    res.setHeader("content-length", retrievedLength);
+
+    if (range !== undefined) {
+      res.setHeader(
+        "content-range",
+        `bytes ${start || 0}-${end || contentLength - 1}/${contentLength}`
+      );
+      res.setHeader("accept-ranges", "bytes");
+    }
+
+    // Listing 7.
+    const ranges = { start: start, end: end }
+    const audioStream = ytdl(videoId, { filter: format => format.itag === itag, ranges })
+    audioStream.pipe(res)
+  }
+});
 
 const playerView = (req, res) => {
-    res.sendFile(path.resolve("./player.html"));
+    res.sendFile(path.resolve("player-safari.html"));
 }
-
-
-
-// Routes s
-app.get("/info", getInfo)
-app.get("/stream/:videoId", getAudioStream)
 app.get('/', playerView)
 
-
-
 const PORT = process.env.PORT || 4000
-app.listen(PORT, () => console.log(`Running on ${PORT}`))
+app.listen(PORT, () => {
+   console.log("localhost: port 4000")
+   //safari.open(url+"/info?url=https://www.youtube.com/watch?v=6Nb-prB-4P0");
+ });
