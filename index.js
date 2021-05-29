@@ -72,7 +72,7 @@ app.get("/stream/:videoId", async(req, res) => {
 });
 
 const playerView = (req, res) => {
-  res.sendFile(path.resolve("player-safari.html"));
+  res.sendFile(path.resolve("player.html"));
 }
 app.get('/', playerView)
 
