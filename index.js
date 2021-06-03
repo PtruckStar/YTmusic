@@ -41,11 +41,21 @@ const getAudioStream = async (req, res) => {
         }
 
         const videoInfo = await ytdl.getInfo(videoId)
-
-        let audioFormat = ytdl.chooseFormat(videoInfo.formats, {
+        let audioFormat;
+        let filteredMP4Audio = videoInfo.formats.filter(
+            v => v.hasVideo == false && v.hasAudio == true && v.container == 'mp4'
+        );
+        audioFormat = ytdl.chooseFormat(filteredMP4Audio, {
             filter: "audioonly",
             quality: "highestaudio"
         });
+        if (!audioFormat) {
+            // Fallback format
+            audioFormat = ytdl.chooseFormat(videoInfo.formats, {
+                filter: "audioonly",
+                quality: "highestaudio"
+            });
+        }
 
         const { itag, container, contentLength } = audioFormat
 
@@ -58,6 +68,17 @@ const getAudioStream = async (req, res) => {
         const startRange = rangePosition ? parseInt(rangePosition[0], 10) : 0;
         const endRange = rangePosition && rangePosition[1].length > 0 ? parseInt(rangePosition[1], 10) : contentLength - 1;
         const chunksize = (endRange - startRange) + 1;
+
+        if (req.method == 'HEAD') {
+            console.log('Got head request');
+            res.writeHead(200, {
+                'Content-Type': `audio/${container}`,
+                'Content-Length': contentLength,
+                "Accept-Ranges": "bytes",
+            })
+            res.end();
+            return;
+        }
 
         res.writeHead(206, {
             'Content-Type': `audio/${container}`,
