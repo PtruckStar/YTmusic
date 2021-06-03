@@ -119,7 +119,7 @@
                 clearPlayer()
                 const thumbnail = videoInfo.thumbnail.split("?")[0]
                 document.querySelector("#videoThumbnail").src = thumbnail
-                document.querySelector("#videoAudio").src = '/stream/' + videoInfo.videoId
+                document.querySelector("#videoAudio").src = videoInfo.url
                 document.querySelector("#videoTitle").textContent = videoInfo.title
                 document.querySelector("#videoAuthor").textContent = videoInfo.author
 
