@@ -53,7 +53,8 @@ const vlc_api = (req, res) => {
       filter: "audioonly",
       quality: "highestaudio"
     });
-    return (res.status(200).json({
+    res.setHeader('Content-Type', 'application/json');
+    res.json({
       success: true,
       data: {
         url: audioFormat.url,
@@ -62,7 +63,7 @@ const vlc_api = (req, res) => {
         author: author ? author["name"] : null,
         title
       }
-    }));
+    });
   } catch (error) {
     console.log(`error --->`, error);
     return res.status(500).json({success: false, msg: "Failed to get video info"});
