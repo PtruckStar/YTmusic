@@ -43,7 +43,7 @@ const getInfo = async (req, res) => {
 
 }
 
-const vlc_api = (req, res) => {
+const vlc_api = async (req, res) => {
   try {
     const {url} = req.query;
     const videoId = ytdl.getURLVideoID(url);
