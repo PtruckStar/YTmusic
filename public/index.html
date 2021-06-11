@@ -1,0 +1,30 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>YTmusic - Play youtube audionly</title>
+    <script type="text/javascript" src="/js/W3Module.js"></script>
+    <script type="text/javascript" src="/js/schema-ebml.js"></script>
+    <script type="text/javascript" src="/js/lib-ebml.js"></script>
+  </head>
+  <body>
+    <audio id="videoAudio" controls>
+    </audio>
+    <script>
+      W3Module.getWebmBlob('/stream/p5MY9CY5MOk').then( (webmBlob) => {
+        W3Module.convertWebmToMP3(webmBlob).then( (mp3Blob) => {
+            document.querySelector("#videoAudio").src = window.URL.createObjectURL(mp3Blob);
+        });
+      });
+      
+      /*
+      const thumbnail = videoInfo.thumbnail.split("?")[0];
+      document.querySelector("#videoThumbnail").src = thumbnail;
+      document.querySelector("#videoAudio").src = videoInfo.url;
+      document.querySelector("#videoTitle").textContent = videoInfo.title;
+      document.querySelector("#videoAuthor").textContent = videoInfo.author;
+      */
+    </script>
+  </body>
+</html>

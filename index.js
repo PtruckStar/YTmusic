@@ -1,6 +1,12 @@
-const app = require("express")();
-const ytdl = require("ytdl-core");
-const path = require("path");
+const express = require("express")
+const ytdl = require("ytdl-core")
+const path = require("path")
+
+const app = express()
+const jspath = path.join(__dirname, 'public');
+
+// Routes s
+app.use(express.static(jspath));
 
 app.get("/stream/:videoId", async(req, res) => {
   const { videoId } = req.params
@@ -71,13 +77,5 @@ app.get("/stream/:videoId", async(req, res) => {
   }
 });
 
-const playerView = (req, res) => {
-  res.sendFile(path.resolve("player.html"));
-}
-app.get('/', playerView)
-
 const PORT = process.env.PORT || 4000
-app.listen(PORT, () => {
-   console.log("localhost: port 4000")
-   //safari.open(url+"/info?url=https://www.youtube.com/watch?v=6Nb-prB-4P0");
- });
+app.listen(PORT, () => console.log(`Running on ${PORT}`))
