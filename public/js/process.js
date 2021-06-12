@@ -1,9 +1,9 @@
 console.log('Worker Enabled.');
 Mp3LameEncoderConfig = {
   TOTAL_MEMORY: 1073741824,
-  memoryInitializerPrefixURL: "./js/Mp3LameEncoder.min.js.mem"
+  memoryInitializerPrefixURL: "./Mp3LameEncoder.min.js.mem"
 };
-importScripts('./js/Mp3LameEncoder.min.js');
+importScripts('./Mp3LameEncoder.min.js');
 let index = 0;
 
 onmessage = (event) => {
