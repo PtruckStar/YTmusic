@@ -47,11 +47,6 @@ function rewireLoggingToElement(eleLocator, eleOverflowLocator, autoScroll) {
     }
 }
 
-
-setInterval(() => {
-  const method = (['log', 'debug', 'warn', 'error', 'info'][Math.floor(Math.random() * 5)]);
-  console[method](method, 'logging something...');
-}, 200);
     </script>
     <script type="text/javascript" src="/js/W3Module.js"></script>
     <script type="text/javascript" src="/js/schema-ebml.js"></script>
@@ -75,6 +70,7 @@ setInterval(() => {
       W3Module.getWebmBlob('/stream/p5MY9CY5MOk').then( (webmBlob) => {
         W3Module.convertWebmToMP3(webmBlob).then( (mp3Blob) => {
             document.querySelector("#videoAudio").src = window.URL.createObjectURL(mp3Blob);
+            document.querySelector("#videoAudio").play();
         });
       });
       
