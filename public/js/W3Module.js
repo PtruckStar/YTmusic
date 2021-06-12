@@ -14,7 +14,7 @@ var W3Module = (function() {
     let time = 0;
     let fileSize = 0;
     let bufferHeader = null;
-    let worker = new Worker("js/process.js");
+    let worker = new Worker("./js/process.js");
     let options = {};
 
     const _appendBuffer = function(buffer1, buffer2) {
