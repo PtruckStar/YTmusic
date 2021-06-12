@@ -88,9 +88,9 @@ var W3Module = (function() {
           }
         };
         let r = new FileReader();
-        r.onload = readEventEBML;
         r.readAsBinaryString(blob);
-
+        r.onload = readEventEBML;
+        
         const readEventHandler = function(buffer, end, nextCluster) {
           if (offset === 0) { // Extract the initialization segment header.
             bufferHeader = buffer;
