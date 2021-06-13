@@ -4,10 +4,9 @@
   "description": "Listen yt sound only",
   "main": "index.js",
   "dependencies": {
-    "body-parser": "^1.19.0",
-    "cors": "^2.8.5",
     "express": "^4.17.1",
-    "ytdl-core": "^4.0.1"
+    "ytdl-core": "^4.0.1",
+    "fluent-ffmpeg": "^2.1.2"
   },
   "devDependencies": {},
   "scripts": {
