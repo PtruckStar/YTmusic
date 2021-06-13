@@ -27,7 +27,7 @@ app.get("/stream/:videoId", async (req, res) => {
   ffmpeg()
     .input(getAudio)
     .toFormat("mp3")
-    .pipe(res);
+    .pipe(res, { end: true });
 });
 
 const PORT = process.env.PORT || 4000;
