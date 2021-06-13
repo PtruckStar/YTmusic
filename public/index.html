@@ -4,10 +4,53 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Safari yt soundonly</title>
+<style>
+body {
+  font-family: Arial, Helvetica, sans-serif;
+  display: grid;
+  position: relative;
+  place-items: center;
+  background: linear-gradient(to bottom, #007db5, #ff8a00);
+  color: white;
+  padding: 0 20px;
+  margin: 0px;
+}
+body::after {
+  position: absolute;
+  background-color: #242424;
+  content: '';
+  width: calc(100% - 10px);
+  height: 100%;
+  z-index: -99;
+}
+#container {
+  position: relative;
+  margin: 100px 5% auto 5%;
+  width: 90%;
+  max-width: 500px;
+  height: 80px;
+  background: #242424;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+#container::before {
+  position: absolute;
+  content: '';
+  width: calc(100% + 10px);
+  height: calc(100% + 10px);
+  left: -5px;
+  top: -5px;
+  background: linear-gradient(to left, #007db5, #ff8a00);
+  z-index: -1;
+}
+</style>
 </head>
 <body>
-  <audio src="/stream/kvoO5hwsYQo" controls>
-  </audio>
-  <br>
+<div id="container">
+<audio src="/stream/p5MY9CY5MOk" controls>
+</audio>
+</div>
+<h1>Yt - audionly!</h1>
 </body>
 </html>
