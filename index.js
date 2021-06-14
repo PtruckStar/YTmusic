@@ -16,7 +16,7 @@ app.use(express.static(jspath));
 
 app.get("/stream/:videoId", async (req, res) => {
   const {videoId} = req.params;
-  const getAudio = ytdl(videoId, {
+  const getAudio = await ytdl(videoId, {
     quality: "highestaudio"
   })
 
@@ -24,10 +24,8 @@ app.get("/stream/:videoId", async (req, res) => {
   res.set({"Content-Type": "audio/mpeg"});
 
   // Send compressed audio mp3 data
-  ffmpeg()
-    .input(getAudio)
-    .toFormat("mp3")
-    .pipe(res, { end: true });
+  const conv = await ffmpeg().input(getAudio).toFormat("mp3")
+  conv.pipe(res, { end: true });
 });
 
 const PORT = process.env.PORT || 4000;
